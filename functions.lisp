@@ -1,3 +1,5 @@
+(setf *random-state* (make-random-state t)) ;Seed random number generator
+
 (defun create-card(suit val)
     "Creates a card, i.e list with suit and value"
     (list :suit suit :val val))
@@ -36,3 +38,10 @@
             (push (nth index cards) shuffled-cards)
             (setq cards (remove-item-from-list cards index)))
     (return-from shuffle-cards shuffled-cards))
+
+(defun deal-card(cards)
+    "Removes the first card from the deck and returns it
+     along with the modified deck"
+    (setq first-card (car cards))
+    (setq cards (cdr cards))
+    (values first-card cards))

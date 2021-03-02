@@ -100,6 +100,28 @@
             (incf fail)))
 
 
+    (setq function-name "deal-card")
+    (format t "  Testing ~a~%" function-name)
+    (multiple-value-setq (card deck) (deal-card (create-deck)))
+    (setq test-string "Card was dealt.")
+    (if card
+        (progn
+            (format t "    ~c[32mPassed: ~a~c[0m~%" #\ESC test-string #\ESC) 
+            (incf success))
+        (progn
+            (format t "    ~c[31mFailed: ~a~c[0m~%" #\ESC test-string #\ESC)
+            (incf fail)))
+    (setq test-string "Deck has 1 less card.")
+    (if (= (list-length deck) 51)
+        (progn
+            (format t "    ~c[32mPassed: ~a~c[0m~%" #\ESC test-string #\ESC) 
+            (incf success))
+        (progn
+            (format t "    ~c[31mFailed: ~a~c[0m~%" #\ESC test-string #\ESC)
+            (incf fail)))
+
+
+
     (setq total (+ success fail))
     (format t "~%")
     (format t "  ~a of ~a tests passed.  ~a% pass rate.~%" success total (* (/ success total) 100))
