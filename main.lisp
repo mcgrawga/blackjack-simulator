@@ -1,23 +1,35 @@
 (load "functions.lisp")
 
-
+(format t "~%")
 (format t "  ____  _            _     _            _    ~%")
 (format t " | __ )| | __ _  ___| | __(_) __ _  ___| | __~%")
 (format t " |  _ \\| |/ _` |/ __| |/ /| |/ _` |/ __| |/ /~%")
 (format t " | |_) | | (_| | (__|   < | | (_| | (__|   < ~%")
 (format t " |____/|_|\\__,_|\\___|_|\\_\\/ |\\__,_|\\___|_|\\_\\~%")
 (format t "                        |__/                 ~%")
+(format t "~%")
+(format t "~%")
 
 
 (setq player-stack 100)
-(setq shoe (create-shoe 8))
-(setq my-list `(a b c))
-(multiple-value-setq (first-item new-list) (deal-card my-list))
-(format t "first item ~a~%" first-item)
-(format t "list ~a~%" my-list)
-(format t "list ~a~%" new-list)
-
+(setq shoe (shuffle-cards (create-shoe 8)))
 
 ;(format t "You have $~a.  How much do you want to bet?:  " player-stack)
 ;(setq player-bet (read))
-;(setq player-hand)
+(setq player-hand nil)
+(setq dealer-hand nil)
+(multiple-value-setq (card shoe) (deal-card shoe))
+(push card player-hand)
+(multiple-value-setq (card shoe) (deal-card shoe))
+(push card dealer-hand)
+(multiple-value-setq (card shoe) (deal-card shoe))
+(push card player-hand)
+(multiple-value-setq (card shoe) (deal-card shoe))
+(push card dealer-hand)
+(format t "Dealer has: ~a~%" (getf (car dealer-hand) :val))
+(format t "You have: ~a ~a~%" (getf (car player-hand) :val) (getf (cadr player-hand) :val))
+(format t "Do you want to Hit[h] Stand[s] Double Down[d]:  ")
+(setq player-action (read))
+
+
+;(screen:clear-window (screen:make-window))

@@ -57,9 +57,9 @@
             (incf fail)))
 
 
-    (setq function-name "remove-item-from-list")
+    (setq function-name "remove-card-from-deck")
     (format t "  Testing ~a~%" function-name)
-    (setq new-deck (remove-item-from-list deck 0))
+    (setq new-deck (remove-card-from-deck deck 0))
     (setq test-string "Removed item from deck.")
     (if (= (list-length new-deck) 51)
         (progn
@@ -68,7 +68,7 @@
         (progn
             (format t "    ~c[31mFailed: ~a~c[0m~%" #\ESC test-string #\ESC)
             (incf fail)))
-    (setq new-shoe (remove-item-from-list shoe 0))
+    (setq new-shoe (remove-card-from-deck shoe 0))
     (setq test-string "Removed item from shoe.")
     (if (= (list-length new-shoe) 415)
         (progn
@@ -121,12 +121,102 @@
             (incf fail)))
 
 
+    (setq function-name "get-num-val-card")
+    (format t "  Testing ~a~%" function-name)
+    (multiple-value-setq (val-1 val-2) (get-num-val-card (create-card "spades" "ace")))
+    (setq test-string "Correct value(s) returned.")
+    (if (and (= val-1 1) (= val-2 11))
+        (progn
+            (format t "    ~c[32mPassed: ~a~c[0m~%" #\ESC test-string #\ESC) 
+            (incf success))
+        (progn
+            (format t "    ~c[31mFailed: ~a~c[0m~%" #\ESC test-string #\ESC)
+            (incf fail)))
+    (multiple-value-setq (val-1 val-2) (get-num-val-card (create-card "clubs" "9")))
+    (setq test-string "Correct value(s) returned.")
+    (if (and (= val-1 9) (eq val-2 nil))
+        (progn
+            (format t "    ~c[32mPassed: ~a~c[0m~%" #\ESC test-string #\ESC) 
+            (incf success))
+        (progn
+            (format t "    ~c[31mFailed: ~a~c[0m~%" #\ESC test-string #\ESC)
+            (incf fail)))
+
+
+    (setq function-name "calculate-hand-value")
+    (format t "  Testing ~a~%" function-name)
+    (setq hand ())
+    (push (create-card "spades" "jack") hand)
+    (push (create-card "spades" "ace") hand)
+    (multiple-value-setq (val-1 val-2) (calculate-hand-value hand))
+    (setq test-string "Should be blackjack")
+    (if (and (= val-1 21) (eq val-2 nil))
+        (progn
+            (format t "    ~c[32mPassed: ~a~c[0m~%" #\ESC test-string #\ESC) 
+            (incf success))
+        (progn
+            (format t "    ~c[31mFailed: ~a~c[0m~%" #\ESC test-string #\ESC)
+            (incf fail)))
+    (setq hand ())
+    (push (create-card "spades" "jack") hand)
+    (push (create-card "spades" "6") hand)
+    (push (create-card "spades" "7") hand)
+    (multiple-value-setq (val-1 val-2) (calculate-hand-value hand))
+    (setq test-string "Should be a bust hand.")
+    (if (and (= val-1 23) (eq val-2 nil))
+        (progn
+            (format t "    ~c[32mPassed: ~a~c[0m~%" #\ESC test-string #\ESC) 
+            (incf success))
+        (progn
+            (format t "    ~c[31mFailed: ~a~c[0m~%" #\ESC test-string #\ESC)
+            (incf fail)))
+    (setq hand ())
+    (push (create-card "spades" "ace") hand)
+    (push (create-card "spades" "ace") hand)
+    (push (create-card "spades" "3") hand)
+    (push (create-card "spades" "ace") hand)
+    (push (create-card "spades" "10") hand)
+    (push (create-card "spades" "10") hand)
+    (multiple-value-setq (val-1 val-2) (calculate-hand-value hand))
+    (setq test-string "Should be a bust hand.")
+    (if (and (= val-1 26) (eq val-2 nil))
+        (progn
+            (format t "    ~c[32mPassed: ~a~c[0m~%" #\ESC test-string #\ESC) 
+            (incf success))
+        (progn
+            (format t "    ~c[31mFailed: ~a~c[0m~%" #\ESC test-string #\ESC)
+            (incf fail)))
+    (setq hand ())
+    (push (create-card "spades" "ace") hand)
+    (push (create-card "spades" "3") hand)
+    (multiple-value-setq (val-1 val-2) (calculate-hand-value hand))
+    (setq test-string "Should be a soft 14.")
+    (if (and (= val-1 4) (= val-2 14))
+        (progn
+            (format t "    ~c[32mPassed: ~a~c[0m~%" #\ESC test-string #\ESC) 
+            (incf success))
+        (progn
+            (format t "    ~c[31mFailed: ~a~c[0m~%" #\ESC test-string #\ESC)
+            (incf fail)))
+    (setq hand ())
+    (push (create-card "spades" "jack") hand)
+    (push (create-card "spades" "queen") hand)
+    (multiple-value-setq (val-1 val-2) (calculate-hand-value hand))
+    (setq test-string "Should be a hard 20.")
+    (if (and (= val-1 20) (eq val-2 nil))
+        (progn
+            (format t "    ~c[32mPassed: ~a~c[0m~%" #\ESC test-string #\ESC) 
+            (incf success))
+        (progn
+            (format t "    ~c[31mFailed: ~a~c[0m~%" #\ESC test-string #\ESC)
+            (incf fail)))
+
 
     (setq total (+ success fail))
     (format t "~%")
-    (format t "  ~a of ~a tests passed.  ~a% pass rate.~%" success total (* (/ success total) 100))
+    (format t "  ~c[32m~a of ~a tests passed.  ~a% pass rate.~c[0m~%" #\ESC success total (round (* (/ success total) 100.0)) #\ESC)
     (if (> fail 0)
-        (format t "  ~a of ~a tests failed.  ~a% failure rate.~%" fail total (* (/ fail total) 100)))
+        (format t "  ~c[31m~a of ~a tests failed.  ~a% failure rate.~c[0m~%" #\ESC fail total (round (* (/ fail total) 100.0)) #\ESC))
     (format t "~%~%")
     (if (> fail 0) 
         (return-from run-tests nil) 
