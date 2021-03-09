@@ -8,9 +8,10 @@
     "Creates a deck of cards"
     (setq deck nil)
     (dolist (suit '(spades diamonds hearts clubs))
-        (dolist (val '("ace" "king" "queen" "jack" "10" "9" "8" "7" "6" "5" "4" "3" "2"))
+        (dolist (val `(ace king queen jack 10 9 8 7 6 5 4 3 2))
             (push (create-card suit val) deck)))
     (return-from create-deck deck))
+
 
 (defun create-shoe(num-decks)
     "Creates an n deck shoe of card decks"
@@ -48,20 +49,31 @@
 
 (defun get-num-val-card(card)
     (setq string-val (getf card :val))
-    (if (string-equal string-val "2") (return-from get-num-val-card 2))
-    (if (string-equal string-val "3") (return-from get-num-val-card 3))
-    (if (string-equal string-val "4") (return-from get-num-val-card 4))
-    (if (string-equal string-val "5") (return-from get-num-val-card 5))
-    (if (string-equal string-val "6") (return-from get-num-val-card 6))
-    (if (string-equal string-val "7") (return-from get-num-val-card 7))
-    (if (string-equal string-val "8") (return-from get-num-val-card 8))
-    (if (string-equal string-val "9") (return-from get-num-val-card 9))
-    (if (string-equal string-val "10") (return-from get-num-val-card 10))
-    (if (string-equal string-val "jack") (return-from get-num-val-card 10))
-    (if (string-equal string-val "queen") (return-from get-num-val-card 10))
-    (if (string-equal string-val "king") (return-from get-num-val-card 10))
-    (if (string-equal string-val "ace") (values 1 11)))
+    (if (eq string-val `2) (return-from get-num-val-card 2))
+    (if (eq string-val `3) (return-from get-num-val-card 3))
+    (if (eq string-val `4) (return-from get-num-val-card 4))
+    (if (eq string-val `5) (return-from get-num-val-card 5))
+    (if (eq string-val `6) (return-from get-num-val-card 6))
+    (if (eq string-val `7) (return-from get-num-val-card 7))
+    (if (eq string-val `8) (return-from get-num-val-card 8))
+    (if (eq string-val `9) (return-from get-num-val-card 9))
+    (if (eq string-val `10) (return-from get-num-val-card 10))
+    (if (eq string-val `jack) (return-from get-num-val-card 10))
+    (if (eq string-val `queen) (return-from get-num-val-card 10))
+    (if (eq string-val `king) (return-from get-num-val-card 10))
+    (if (eq string-val `ace) (values 1 11)))
 
+    (setq card (create-card `spades `2))
+    (format t "~a~%" (get-num-val-card card))
+
+
+(defun get-hand-vals(hand)
+    "Returns a list of only values for a hand.  Does not include suits"
+    (setq vals nil)
+    (loop for card in hand do
+        (push (getf card :val) vals))
+    (return-from get-hand-vals vals))
+   
 
 
 (defun calculate-hand-value(hand)
@@ -72,7 +84,7 @@
 
     (setq hand-contains-ace nil)
     (loop for card in hand do
-        (if (string-equal (getf card :val) "ace") (setq hand-contains-ace T) )
+        (if (eq (getf card :val) `ace) (setq hand-contains-ace T) )
         (incf total-1 (get-num-val-card card)))
     (if hand-contains-ace 
         (setq total-2 (+ total-1 10))
@@ -85,13 +97,3 @@
                     (setq total-2 nil) 
                     (setq total-1 21)))))
     (values total-1 total-2))
-
-(setq hand ())
-;(push (create-card "spades" "jack") hand)
-;(push (create-card "spades" "ace") hand)
-(push (create-card "spades" "10") hand)
-(push (create-card "spades" "10") hand)
-(push (create-card "spades" "queen") hand)
-(format t "hand: ~a~%" hand)
-(multiple-value-setq (v1 v2) (calculate-hand-value hand))
-(format t "v1: ~a  v2: ~a~%" v1 v2)

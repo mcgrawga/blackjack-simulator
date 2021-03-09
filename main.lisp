@@ -12,10 +12,10 @@
 
 
 (setq player-stack 100)
-(setq shoe (shuffle-cards (create-shoe 8)))
+(setq shoe (shuffle-cards (create-deck)))
 
-;(format t "You have $~a.  How much do you want to bet?:  " player-stack)
-;(setq player-bet (read))
+(format t "You have $~a.  How much do you want to bet?:  " player-stack)
+(setq player-bet (read))
 (setq player-hand nil)
 (setq dealer-hand nil)
 (multiple-value-setq (card shoe) (deal-card shoe))
@@ -26,8 +26,8 @@
 (push card player-hand)
 (multiple-value-setq (card shoe) (deal-card shoe))
 (push card dealer-hand)
-(format t "Dealer has: ~a~%" (getf (car dealer-hand) :val))
-(format t "You have: ~a ~a~%" (getf (car player-hand) :val) (getf (cadr player-hand) :val))
+(format t "Dealer shows a: ~:(~a~)~%" (getf (car dealer-hand) :val))
+(format t "You have a 6 or 16. (~:(~a ~a~))~%" (getf (car player-hand) :val) (getf (cadr player-hand) :val))
 (format t "Do you want to Hit[h] Stand[s] Double Down[d]:  ")
 (setq player-action (read))
 
