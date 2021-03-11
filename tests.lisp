@@ -29,6 +29,24 @@
         (progn
             (format t "    ~c[31mFailed: ~a~c[0m~%" #\ESC test-string #\ESC)
             (incf fail)))
+    (setq test-string "Invalid suit raised exception.")
+    (handler-case 
+        (progn 
+            (create-card 'stupid '10)
+            (format t "    ~c[31mFailed: Exception test: ~a~c[0m~%" #\ESC test-string #\ESC)
+            (incf fail))
+        (t (error)
+            (format t "    ~c[32mPassed: Exception test: ~a~c[0m~%" #\ESC error #\ESC) 
+            (incf success)))
+    (setq test-string "Invalid val raised exception.")
+    (handler-case 
+        (progn 
+            (create-card 'clubs '15)
+            (format t "    ~c[31mFailed: Exception test: ~a~c[0m~%" #\ESC test-string #\ESC)
+            (incf fail))
+        (t (error)
+            (format t "    ~c[32mPassed: Exception test: ~a~c[0m~%" #\ESC error #\ESC) 
+            (incf success)))
 
 
     (setq function-name "create-deck")
@@ -55,12 +73,29 @@
         (progn
             (format t "    ~c[31mFailed: ~a~c[0m~%" #\ESC test-string #\ESC)
             (incf fail)))
+    (setq test-string "Invalid num decks raised exception.")
+    (handler-case 
+        (progn 
+            (create-shoe 15)
+            (format t "    ~c[31mFailed: Exception test: ~a~c[0m~%" #\ESC test-string #\ESC)
+            (incf fail))
+        (t (error)
+            (format t "    ~c[32mPassed: Exception test: ~a~c[0m~%" #\ESC error #\ESC) 
+            (incf success)))
+    (handler-case 
+        (progn 
+            (create-shoe 0)
+            (format t "    ~c[31mFailed: Exception test: ~a~c[0m~%" #\ESC test-string #\ESC)
+            (incf fail))
+        (t (error)
+            (format t "    ~c[32mPassed: Exception test: ~a~c[0m~%" #\ESC error #\ESC) 
+            (incf success)))
 
 
     (setq function-name "remove-card-from-deck")
     (format t "  Testing ~a~%" function-name)
     (setq new-deck (remove-card-from-deck deck 0))
-    (setq test-string "Removed item from deck.")
+    (setq test-string "Removed card from deck.")
     (if (= (list-length new-deck) 51)
         (progn
             (format t "    ~c[32mPassed: ~a~c[0m~%" #\ESC test-string #\ESC) 
@@ -68,7 +103,7 @@
         (progn
             (format t "    ~c[31mFailed: ~a~c[0m~%" #\ESC test-string #\ESC)
             (incf fail)))
-    (setq new-shoe (remove-card-from-deck shoe 0))
+    (setq new-shoe (remove-card-from-deck (create-shoe 8) 0))
     (setq test-string "Removed item from shoe.")
     (if (= (list-length new-shoe) 415)
         (progn
@@ -77,6 +112,33 @@
         (progn
             (format t "    ~c[31mFailed: ~a~c[0m~%" #\ESC test-string #\ESC)
             (incf fail)))
+    (setq test-string "Removed item from empty deck.")
+    (handler-case 
+        (progn 
+            (remove-card-from-deck () 0)
+            (format t "    ~c[31mFailed: Exception test: ~a~c[0m~%" #\ESC test-string #\ESC)
+            (incf fail))
+        (t (error)
+            (format t "    ~c[32mPassed: Exception test: ~a~c[0m~%" #\ESC error #\ESC) 
+            (incf success)))
+    (setq test-string "Removed item using negative index.")
+    (handler-case 
+        (progn 
+            (remove-card-from-deck (create-deck) -1)
+            (format t "    ~c[31mFailed: Exception test: ~a~c[0m~%" #\ESC test-string #\ESC)
+            (incf fail))
+        (t (error)
+            (format t "    ~c[32mPassed: Exception test: ~a~c[0m~%" #\ESC error #\ESC) 
+            (incf success)))
+    (setq test-string "Removed item using to great an index.")
+    (handler-case 
+        (progn 
+            (remove-card-from-deck (create-deck) 52)
+            (format t "    ~c[31mFailed: Exception test: ~a~c[0m~%" #\ESC test-string #\ESC)
+            (incf fail))
+        (t (error)
+            (format t "    ~c[32mPassed: Exception test: ~a~c[0m~%" #\ESC error #\ESC) 
+            (incf success)))
 
 
     (setq function-name "shuffle-cards")
@@ -98,6 +160,16 @@
         (progn
             (format t "    ~c[31mFailed: ~a~c[0m~%" #\ESC test-string #\ESC)
             (incf fail)))
+    (setq test-string "Shuffle an empty deck.")
+    (handler-case 
+        (progn 
+            (shuffle-cards ())
+            (format t "    ~c[31mFailed: Exception test: ~a~c[0m~%" #\ESC test-string #\ESC)
+            (incf fail))
+        (t (error)
+            (format t "    ~c[32mPassed: Exception test: ~a~c[0m~%" #\ESC error #\ESC) 
+            (incf success)))
+
 
 
     (setq function-name "deal-card")
@@ -119,12 +191,22 @@
         (progn
             (format t "    ~c[31mFailed: ~a~c[0m~%" #\ESC test-string #\ESC)
             (incf fail)))
+    (setq test-string "Empty deck raised exception")
+    (handler-case 
+        (progn 
+            (multiple-value-setq (card deck) (deal-card ()))
+            (format t "    ~c[31mFailed: Exception test: ~a~c[0m~%" #\ESC test-string #\ESC)
+            (incf fail))
+        (t (error)
+            (format t "    ~c[32mPassed: Exception test: ~a~c[0m~%" #\ESC error #\ESC) 
+            (incf success)))
+
 
 
     (setq function-name "get-num-val-card")
     (format t "  Testing ~a~%" function-name)
     (multiple-value-setq (val-1 val-2) (get-num-val-card (create-card `spades `ace)))
-    (setq test-string "Correct value(s) returned.")
+    (setq test-string "Returned 1 and 11.")
     (if (and (= val-1 1) (= val-2 11))
         (progn
             (format t "    ~c[32mPassed: ~a~c[0m~%" #\ESC test-string #\ESC) 
@@ -133,7 +215,7 @@
             (format t "    ~c[31mFailed: ~a~c[0m~%" #\ESC test-string #\ESC)
             (incf fail)))
     (multiple-value-setq (val-1 val-2) (get-num-val-card (create-card `clubs `9)))
-    (setq test-string "Correct value(s) returned.")
+    (setq test-string "Returned 9 and nil.")
     (if (and (= val-1 9) (eq val-2 nil))
         (progn
             (format t "    ~c[32mPassed: ~a~c[0m~%" #\ESC test-string #\ESC) 
@@ -141,6 +223,15 @@
         (progn
             (format t "    ~c[31mFailed: ~a~c[0m~%" #\ESC test-string #\ESC)
             (incf fail)))
+    (setq test-string "Threw exception on nil card.")
+    (handler-case 
+        (progn 
+            (get-num-val-card ())
+            (format t "    ~c[31mFailed: Exception test: ~a~c[0m~%" #\ESC test-string #\ESC)
+            (incf fail))
+        (t (error)
+            (format t "    ~c[32mPassed: Exception test: ~a~c[0m~%" #\ESC error #\ESC) 
+            (incf success)))
 
 
     (setq function-name "calculate-hand-value")
@@ -210,6 +301,17 @@
         (progn
             (format t "    ~c[31mFailed: ~a~c[0m~%" #\ESC test-string #\ESC)
             (incf fail)))
+    (setq test-string "Threw exception on empty hand.")
+    (handler-case 
+        (progn 
+            (calculate-hand-value ())
+            (format t "    ~c[31mFailed: Exception test: ~a~c[0m~%" #\ESC test-string #\ESC)
+            (incf fail))
+        (t (error)
+            (format t "    ~c[32mPassed: Exception test: ~a~c[0m~%" #\ESC error #\ESC) 
+            (incf success)))
+    
+    
 
 
 
@@ -224,11 +326,53 @@
     (setq vals (get-hand-vals hand))
     (setq test-string "List should contain 2 ACE JACK 10 8.")
     (setq val-1 (find '2 vals))
-    (setq val-1 (find 'ace vals))
-    (setq val-1 (find 'jack vals))
-    (setq val-1 (find '10 vals))
-    (setq val-1 (find '8 vals))
-    (if val-1
+    (setq val-2 (find 'ace vals))
+    (setq val-3 (find 'jack vals))
+    (setq val-4 (find '10 vals))
+    (setq val-5 (find '8 vals))
+    (if (and val-1 val-2 val-3 val-4 val-5)
+        (progn
+            (format t "    ~c[32mPassed: ~a~c[0m~%" #\ESC test-string #\ESC) 
+            (incf success))
+        (progn
+            (format t "    ~c[31mFailed: ~a~c[0m~%" #\ESC test-string #\ESC)
+            (incf fail)))
+    (setq test-string "Threw exception on empty hand.")
+    (handler-case 
+        (progn 
+            (get-hand-vals ())
+            (format t "    ~c[31mFailed: Exception test: ~a~c[0m~%" #\ESC test-string #\ESC)
+            (incf fail))
+        (t (error)
+            (format t "    ~c[32mPassed: Exception test: ~a~c[0m~%" #\ESC error #\ESC) 
+            (incf success)))
+
+
+
+
+
+
+    (setq function-name "deck-has-at-least-n-cards")
+    (format t "  Testing ~a~%" function-name)
+    (setq deck (create-deck))
+    (setq test-string "Deck has at least 52 cards.")
+    (if (deck-has-at-least-n-cards deck 52)
+        (progn
+            (format t "    ~c[32mPassed: ~a~c[0m~%" #\ESC test-string #\ESC) 
+            (incf success))
+        (progn
+            (format t "    ~c[31mFailed: ~a~c[0m~%" #\ESC test-string #\ESC)
+            (incf fail)))
+    (setq test-string "Deck has at least 51 cards.")
+    (if (deck-has-at-least-n-cards deck 51)
+        (progn
+            (format t "    ~c[32mPassed: ~a~c[0m~%" #\ESC test-string #\ESC) 
+            (incf success))
+        (progn
+            (format t "    ~c[31mFailed: ~a~c[0m~%" #\ESC test-string #\ESC)
+            (incf fail)))
+    (setq test-string "Deck does not have at least 53 cards.")
+    (if (not (deck-has-at-least-n-cards deck 53))
         (progn
             (format t "    ~c[32mPassed: ~a~c[0m~%" #\ESC test-string #\ESC) 
             (incf success))
