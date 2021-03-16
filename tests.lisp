@@ -381,6 +381,143 @@
             (incf fail)))
 
 
+    (setq function-name "deal-player-and-dealer")
+    (format t "  Testing ~a~%" function-name)
+    (setq shoe (create-shoe 2))
+    (setq initial-shoe-size (list-length shoe))
+    (multiple-value-setq (player-hand dealer-hand shoe) (deal-player-and-dealer shoe))
+    (setq test-string "Player was dealt 2 cards.")
+    (if ( = (list-length player-hand) 2)
+        (progn
+            (format t "    ~c[32mPassed: ~a~c[0m~%" #\ESC test-string #\ESC) 
+            (incf success))
+        (progn
+            (format t "    ~c[31mFailed: ~a~c[0m~%" #\ESC test-string #\ESC)
+            (incf fail)))
+    (setq test-string "Dealer was dealt 2 cards.")
+    (if ( = (list-length dealer-hand) 2)
+        (progn
+            (format t "    ~c[32mPassed: ~a~c[0m~%" #\ESC test-string #\ESC) 
+            (incf success))
+        (progn
+            (format t "    ~c[31mFailed: ~a~c[0m~%" #\ESC test-string #\ESC)
+            (incf fail)))
+    (setq test-string "Deck has 4 cards less than before deal.")
+    (if (= (- initial-shoe-size 4) (list-length shoe))
+        (progn
+            (format t "    ~c[32mPassed: ~a~c[0m~%" #\ESC test-string #\ESC) 
+            (incf success))
+        (progn
+            (format t "    ~c[31mFailed: ~a~c[0m~%" #\ESC test-string #\ESC)
+            (incf fail)))
+
+    (setq function-name "get-player-bet")
+    (format t "  Testing ~a~%" function-name)
+    (setq test-string "Threw exception on empty chip stack.")
+    (handler-case 
+        (progn 
+            (get-player-bet ())
+            (format t "    ~c[31mFailed: Exception test: ~a~c[0m~%" #\ESC test-string #\ESC)
+            (incf fail))
+        (t (error)
+            (format t "    ~c[32mPassed: Exception test: ~a~c[0m~%" #\ESC error #\ESC) 
+            (incf success)))
+    
+
+    (setq function-name "player-play")
+    (format t "  Testing ~a~%" function-name)
+    (setq card-1 (create-card 'spades 'ace))
+    (setq card-2 (create-card 'spades 'ace))
+    (setq player-hand ())
+    (push card-1 player-hand)
+    (setq dealer-hand ())
+    (push card-1 dealer-hand)
+    (push card-2 dealer-hand)
+    (setq shoe ())
+    (push card-1 shoe)
+    (push card-2 shoe)
+    (setq test-string "Threw exception on player-hand with less than 2 cards.")
+    (handler-case 
+        (progn 
+            (player-play player-hand dealer-hand shoe)
+            (format t "    ~c[31mFailed: Exception test: ~a~c[0m~%" #\ESC test-string #\ESC)
+            (incf fail))
+        (t (error)
+            (format t "    ~c[32mPassed: Exception test: ~a~c[0m~%" #\ESC error #\ESC) 
+            (incf success)))
+    (setq card-1 (create-card 'spades 'ace))
+    (setq card-2 (create-card 'spades 'ace))
+    (setq player-hand ())
+    (push card-1 player-hand)
+    (push card-2 player-hand)
+    (setq dealer-hand ())
+    (push card-1 dealer-hand)
+    (setq shoe ())
+    (push card-1 shoe)
+    (push card-2 shoe)
+    (setq test-string "Threw exception on dealer-hand with less than 2 cards.")
+    (handler-case 
+        (progn 
+            (player-play player-hand dealer-hand shoe)
+            (format t "    ~c[31mFailed: Exception test: ~a~c[0m~%" #\ESC test-string #\ESC)
+            (incf fail))
+        (t (error)
+            (format t "    ~c[32mPassed: Exception test: ~a~c[0m~%" #\ESC error #\ESC) 
+            (incf success)))
+    (setq card-1 (create-card 'spades 'ace))
+    (setq card-2 (create-card 'spades 'ace))
+    (setq player-hand ())
+    (push card-1 player-hand)
+    (push card-2 player-hand)
+    (setq dealer-hand ())
+    (push card-1 dealer-hand)
+    (push card-2 dealer-hand)
+    (setq shoe ())
+    (setq test-string "Threw exception on empty shoe.")
+    (handler-case 
+        (progn 
+            (player-play player-hand dealer-hand shoe)
+            (format t "    ~c[31mFailed: Exception test: ~a~c[0m~%" #\ESC test-string #\ESC)
+            (incf fail))
+        (t (error)
+            (format t "    ~c[32mPassed: Exception test: ~a~c[0m~%" #\ESC error #\ESC) 
+            (incf success)))
+
+
+    (setq function-name "dealer-play")
+    (format t "  Testing ~a~%" function-name)
+    (setq card-1 (create-card 'spades 'ace))
+    (setq card-2 (create-card 'spades 'ace))
+    (setq dealer-hand ())
+    (push card-1 dealer-hand)
+    (setq shoe ())
+    (push card-1 shoe)
+    (push card-2 shoe)
+    (setq test-string "Threw exception on dealer-hand with less than 2 cards.")
+    (handler-case 
+        (progn 
+            (dealer-play dealer-hand shoe)
+            (format t "    ~c[31mFailed: Exception test: ~a~c[0m~%" #\ESC test-string #\ESC)
+            (incf fail))
+        (t (error)
+            (format t "    ~c[32mPassed: Exception test: ~a~c[0m~%" #\ESC error #\ESC) 
+            (incf success)))
+        (setq card-1 (create-card 'spades 'ace))
+    (setq dealer-hand ())
+    (push card-1 dealer-hand)
+    (push card-2 dealer-hand)
+    (setq shoe ())
+    (setq test-string "Threw exception on empty shoe.")
+    (handler-case 
+        (progn 
+            (dealer-play dealer-hand shoe)
+            (format t "    ~c[31mFailed: Exception test: ~a~c[0m~%" #\ESC test-string #\ESC)
+            (incf fail))
+        (t (error)
+            (format t "    ~c[32mPassed: Exception test: ~a~c[0m~%" #\ESC error #\ESC) 
+            (incf success)))
+
+
 
 
     (setq total (+ success fail))
@@ -393,4 +530,15 @@
         (return-from run-tests nil) 
         (return-from run-tests T)))
 
-(run-tests)
+
+
+(format t " _________  ________   ______   _________   ______  ~%")
+(format t "|  _   _  ||_   __  |.' ____ \\ |  _   _  |.' ____ \\ ~%")
+(format t "|_/ | | \\_|  | |_ \\_|| (___ \\_||_/ | | \\_|| (___ \\_|~%")
+(format t "    | |      |  _| _  _.____`.     | |     _.____`. ~%")
+(format t "   _| |_    _| |__/ || \\____) |   _| |_   | \\____) |~%")
+(format t "  |_____|  |________| \\______.'  |_____|   \\______.'~%")
+
+
+(if (run-tests) (quit 0) (quit 1))
+

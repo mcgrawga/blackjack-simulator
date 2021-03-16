@@ -131,11 +131,92 @@
                     (setq total-1 21)))))
     (values total-1 total-2))
 
-;(defun deal-player-and-dealer(shoe)
-;    "Deals the initial hand to player and dealer.
-;     Returns both hands and the modified deck"
-;    (setq player-hand nil)
-;    (setq dealer-hand nil)
-;    (setq cards-in-shoe (list-length shoe))
-;    (if (list-length shoe))
-;)
+(defun deal-player-and-dealer(shoe)
+    "Deals the initial hand to player and dealer.
+     Returns both hands and the modified deck"
+    (setq cards-in-deck (list-length deck))
+    (if (< cards-in-deck 4) 
+        (error "Can't deal player and dealer with less than 4 cards in deck."))
+    (setq player-hand nil)
+    (setq dealer-hand nil)
+    (multiple-value-setq (card shoe) (deal-card shoe))
+    (push card player-hand)
+    (multiple-value-setq (card shoe) (deal-card shoe))
+    (push card dealer-hand)
+    (multiple-value-setq (card shoe) (deal-card shoe))
+    (push card player-hand)
+    (multiple-value-setq (card shoe) (deal-card shoe))
+    (push card dealer-hand)
+    (values player-hand dealer-hand shoe))
+
+(defun get-player-bet(player-stack)
+    "Prompts for the bet, decrements the player chip stack and returns both"
+    (if (not player-stack) 
+        (error "Can't bet with an empty chip stack."))
+    (setq done nil)
+    (loop while (not done) do
+        (format t "You have $~a.  How much do you want to bet?:  " player-stack)
+        (setq bet (read))
+        (if (not (numberp bet)) (format t "That ain't a number. Try again.~%"))
+        (if (> bet player-stack) (format t "Can't bet more than you have. Try again.~%"))
+        (if (< bet 1) (format t "You have to be at least $1. Try again.~%"))
+        (return-from get-player-bet (values bet (- player-stack bet)))
+    ))
+
+
+(defun player-play (player-hand dealer-hand shoe)
+    "Displays player hand and prompts to hit stand or double"
+    (if (< (list-length player-hand) 2)
+        (error "Can't play player-hand has less than 2 cards."))
+    (if (< (list-length dealer-hand) 2)
+        (error "Can't play dealer-hand has less than 2 cards."))
+    (if (not shoe)
+        (error "Can't play with an empty shoe."))
+    (format t "Dealer shows a ~:(~a~).~%" (getf (car dealer-hand) :val))
+    (setq player-action nil)
+    (loop while (not (string-equal player-action "s"))
+        do 
+            (multiple-value-setq (player-hand-val-1 player-hand-val-2) (calculate-hand-value player-hand))
+            (if (and (>= player-hand-val-1 21) (not player-hand-val-2)) (setq player-action "s") (progn
+                (format t "You have a ~a~@[ or ~a~]. (~{~a~^ ~})~%" player-hand-val-1 player-hand-val-2 (get-hand-vals player-hand))
+                (format t "Do you want to Hit[h] Stand[s] Double Down[d]:  ")
+                (setq player-action (read))
+                (if (not (string-equal player-action "s")) (progn
+                    (multiple-value-setq (card shoe) (deal-card shoe))
+                    (push card player-hand))))))
+    (values player-hand shoe))
+
+(defun dealer-play (dealer-hand shoe)
+    "Plays out the dealer hand, hits on soft 17"
+    (if (< (list-length dealer-hand) 2)
+        (error "Can't play dealer-hand has less than 2 cards."))
+    (if (not shoe)
+        (error "Can't play with an empty shoe."))
+    (setq done nil)
+    (multiple-value-setq (dealer-hand-val-1 dealer-hand-val-2) (calculate-hand-value dealer-hand))
+    (loop while (not done) do 
+        (if dealer-hand-val-2 ;Soft hand
+            (if (and (> dealer-hand-val-2 17) (<= dealer-hand-val-2 21)) (setq done T)))
+        (if (>= dealer-hand-val-1 17) (setq done T)) ;Hard hand
+
+        (if (not done) (progn
+            ;Deal another card
+            (multiple-value-setq (card shoe) (deal-card shoe))
+            (push card dealer-hand)
+            (multiple-value-setq (dealer-hand-val-1 dealer-hand-val-2) (calculate-hand-value dealer-hand))
+        )))
+    (values dealer-hand shoe))
+
+;(setq shoe (shuffle-cards (create-deck)))
+;(setq dealer-hand nil)
+;(push (create-card 'spades 'ace) dealer-hand)
+;(push (create-card 'spades '6) dealer-hand)
+;(multiple-value-setq (dealer-hand shoe) (dealer-play dealer-hand shoe))
+;(format t "Dealer ended up with ~a~@[ or ~a~]. (~{~a~^ ~})~%" dealer-hand-val-1 dealer-hand-val-2 (get-hand-vals dealer-hand))
+;(format t "Shoe has: ~a~%" (list-length shoe))
+
+;(setq dealer-hand nil)
+;(push (create-card 'spades 'ace) dealer-hand)
+;(push (create-card 'spades '6) dealer-hand)
+;(multiple-value-setq (dealer-hand-val-1 dealer-hand-val-2) (calculate-hand-value dealer-hand))
+;(format t "~a  ~a~%" dealer-hand-val-1 dealer-hand-val-2)
