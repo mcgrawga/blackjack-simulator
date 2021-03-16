@@ -422,7 +422,7 @@
         (t (error)
             (format t "    ~c[32mPassed: Exception test: ~a~c[0m~%" #\ESC error #\ESC) 
             (incf success)))
-    
+
 
     (setq function-name "player-play")
     (format t "  Testing ~a~%" function-name)
@@ -516,6 +516,69 @@
         (t (error)
             (format t "    ~c[32mPassed: Exception test: ~a~c[0m~%" #\ESC error #\ESC) 
             (incf success)))
+
+
+
+    (setq function-name "get-best-hand-value")
+    (format t "  Testing ~a~%" function-name)
+    (setq test-string "Threw exception on empty hand.")
+    (handler-case 
+        (progn 
+            (get-best-hand-value ())
+            (format t "    ~c[31mFailed: Exception test: ~a~c[0m~%" #\ESC test-string #\ESC)
+            (incf fail))
+        (t (error)
+            (format t "    ~c[32mPassed: Exception test: ~a~c[0m~%" #\ESC error #\ESC) 
+            (incf success)))
+    (setq hand nil)
+    (push (create-card 'spades '10) hand)
+    (push (create-card 'spades '7) hand)
+    (setq test-string "Returns 17.")
+    (if (= (get-best-hand-value hand) 17)
+        (progn
+            (format t "    ~c[32mPassed: ~a~c[0m~%" #\ESC test-string #\ESC) 
+            (incf success))
+        (progn
+            (format t "    ~c[31mFailed: ~a~c[0m~%" #\ESC test-string #\ESC)
+            (incf fail)))
+    (setq hand nil)
+    (push (create-card 'spades '10) hand)
+    (push (create-card 'spades 'ace) hand)
+    (setq test-string "Returns 21.")
+    (if (= (get-best-hand-value hand) 21)
+        (progn
+            (format t "    ~c[32mPassed: ~a~c[0m~%" #\ESC test-string #\ESC) 
+            (incf success))
+        (progn
+            (format t "    ~c[31mFailed: ~a~c[0m~%" #\ESC test-string #\ESC)
+            (incf fail)))
+    (setq hand nil)
+    (push (create-card 'spades '10) hand)
+    (push (create-card 'spades 'ace) hand)
+    (push (create-card 'spades 'ace) hand)
+    (push (create-card 'spades '10) hand)
+    (setq test-string "Returns 22.")
+    (if (= (get-best-hand-value hand) 22)
+        (progn
+            (format t "    ~c[32mPassed: ~a~c[0m~%" #\ESC test-string #\ESC) 
+            (incf success))
+        (progn
+            (format t "    ~c[31mFailed: ~a~c[0m~%" #\ESC test-string #\ESC)
+            (incf fail)))
+    (setq hand nil)
+    (push (create-card 'spades '10) hand)
+    (push (create-card 'spades 'ace) hand)
+    (push (create-card 'spades 'ace) hand)
+    (setq test-string "Returns 12.")
+    (if (= (get-best-hand-value hand) 12)
+        (progn
+            (format t "    ~c[32mPassed: ~a~c[0m~%" #\ESC test-string #\ESC) 
+            (incf success))
+        (progn
+            (format t "    ~c[31mFailed: ~a~c[0m~%" #\ESC test-string #\ESC)
+            (incf fail)))
+
+
 
 
 

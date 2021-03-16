@@ -13,7 +13,7 @@
 
 (setq player-stack 100)
 (setq shoe (shuffle-cards (create-deck)))
-;(setq player-bet (get-player-bet))
+(setq player-bet (get-player-bet player-stack))
 
 ; Initial deal.
 (multiple-value-setq (player-hand dealer-hand shoe) (deal-player-and-dealer shoe))
@@ -26,8 +26,9 @@
 
 ; Print final values
 (multiple-value-setq (player-hand-val-1 player-hand-val-2) (calculate-hand-value player-hand))
-(format t "You ended up with ~a~@[ or ~a~]. (~{~a~^ ~})~%" player-hand-val-1 player-hand-val-2 (get-hand-vals player-hand))
 (multiple-value-setq (dealer-hand-val-1 dealer-hand-val-2) (calculate-hand-value dealer-hand))
+(format t "~%")
+(format t "You ended up with ~a~@[ or ~a~]. (~{~a~^ ~})~%" player-hand-val-1 player-hand-val-2 (get-hand-vals player-hand))
 (format t "Dealer ended up with ~a~@[ or ~a~]. (~{~a~^ ~})~%" dealer-hand-val-1 dealer-hand-val-2 (get-hand-vals dealer-hand))
 
 

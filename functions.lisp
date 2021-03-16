@@ -131,6 +131,20 @@
                     (setq total-1 21)))))
     (values total-1 total-2))
 
+(defun get-best-hand-value(hand)
+    "Calculates the best blackjack hand hand value.  Returns 1 value."
+    (if (not hand) 
+        (error "Can't calculate hand value for empty hand."))
+    (multiple-value-setq (val-1 val-2) (calculate-hand-value hand))
+    (if (not val-2) (return-from get-best-hand-value val-1))
+    (if (> val-2 val-1) 
+            (if (<= val-2 21) 
+                (return-from get-best-hand-value val-2)
+                (return-from get-best-hand-value val-1))
+            (return-from get-best-hand-value val-1)))
+
+
+
 (defun deal-player-and-dealer(shoe)
     "Deals the initial hand to player and dealer.
      Returns both hands and the modified deck"
@@ -164,6 +178,20 @@
     ))
 
 
+(defun get-player-action()
+    "Prompts for the action and returns it."
+    (setq done nil)
+    (loop while (not done) do
+        (setq done T)
+        (format t "Hit[h] Stand[s] Double Down[d]: ")
+        (setq player-action (read))
+        (if (numberp player-action) (setq done nil)) ;invalid entry
+        (if (not (member player-action '(h s d))) (setq done nil)) ;invalid entry
+        (if (not done) (format t "That ain't valid. Try again.~%")))
+    (return-from get-player-action player-action))
+
+
+
 (defun player-play (player-hand dealer-hand shoe)
     "Displays player hand and prompts to hit stand or double"
     (if (< (list-length player-hand) 2)
@@ -172,18 +200,21 @@
         (error "Can't play dealer-hand has less than 2 cards."))
     (if (not shoe)
         (error "Can't play with an empty shoe."))
-    (format t "Dealer shows a ~:(~a~).~%" (getf (car dealer-hand) :val))
     (setq player-action nil)
     (loop while (not (string-equal player-action "s"))
         do 
             (multiple-value-setq (player-hand-val-1 player-hand-val-2) (calculate-hand-value player-hand))
-            (if (and (>= player-hand-val-1 21) (not player-hand-val-2)) (setq player-action "s") (progn
-                (format t "You have a ~a~@[ or ~a~]. (~{~a~^ ~})~%" player-hand-val-1 player-hand-val-2 (get-hand-vals player-hand))
-                (format t "Do you want to Hit[h] Stand[s] Double Down[d]:  ")
-                (setq player-action (read))
-                (if (not (string-equal player-action "s")) (progn
-                    (multiple-value-setq (card shoe) (deal-card shoe))
-                    (push card player-hand))))))
+            (if (and (>= player-hand-val-1 21) (not player-hand-val-2)) (setq player-action "s") 
+                (progn
+                    (format t "~%")
+                    (format t "Dealer shows a ~:(~a~).~%" (getf (car (cdr dealer-hand)) :val))
+                    (format t "You have a ~a~@[ or ~a~]. (~{~a~^ ~})~%" player-hand-val-1 player-hand-val-2 (get-hand-vals player-hand))
+                    (setq player-action (get-player-action))
+                        (if (not (string-equal player-action "s")) 
+                            (progn
+                                (multiple-value-setq (card shoe) (deal-card shoe))
+                                (push card player-hand)))))
+            )
     (values player-hand shoe))
 
 (defun dealer-play (dealer-hand shoe)
