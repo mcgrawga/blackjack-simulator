@@ -3,7 +3,7 @@
 
 (defun run-tests()
     "Runs unit tests.  Returns true if all succeed.  Nil if something fails."
-    (format t "~%~%RUNNING TESTS......~%")
+    (format t "~%RUNNING TESTS......~%")
     (setq success 0)
     (setq fail 0)
 
@@ -579,7 +579,99 @@
             (incf fail)))
 
 
-
+    (setq function-name "get-winner")
+    (format t "  Testing ~a~%" function-name)
+    (setq player-hand ())
+    (push (create-card `spades `7) player-hand)
+    (push (create-card `spades `10) player-hand)
+    (setq dealer-hand ())
+    (push (create-card `spades `jack) dealer-hand)
+    (push (create-card `spades `10) dealer-hand)
+    (setq test-string "Winner is dealer. (no bust)")
+    (if (equal (get-winner player-hand dealer-hand) 'dealer)
+        (progn
+            (format t "    ~c[32mPassed: ~a~c[0m~%" #\ESC test-string #\ESC) 
+            (incf success))
+        (progn
+            (format t "    ~c[31mFailed: ~a~c[0m~%" #\ESC test-string #\ESC)
+            (incf fail)))
+    (setq player-hand ())
+    (push (create-card `spades `7) player-hand)
+    (push (create-card `spades `10) player-hand)
+    (push (create-card `spades `7) player-hand)
+    (setq dealer-hand ())
+    (push (create-card `spades `jack) dealer-hand)
+    (push (create-card `spades `10) dealer-hand)
+    (setq test-string "Winner is dealer. (player bust)")
+    (if (equal (get-winner player-hand dealer-hand) 'dealer)
+        (progn
+            (format t "    ~c[32mPassed: ~a~c[0m~%" #\ESC test-string #\ESC) 
+            (incf success))
+        (progn
+            (format t "    ~c[31mFailed: ~a~c[0m~%" #\ESC test-string #\ESC)
+            (incf fail)))
+    (setq player-hand ())
+    (push (create-card `spades `ace) player-hand)
+    (push (create-card `spades `10) player-hand)
+    (setq dealer-hand ())
+    (push (create-card `spades `jack) dealer-hand)
+    (push (create-card `spades `10) dealer-hand)
+    (setq test-string "Winner is player. (no bust)")
+    (if (equal (get-winner player-hand dealer-hand) 'player)
+        (progn
+            (format t "    ~c[32mPassed: ~a~c[0m~%" #\ESC test-string #\ESC) 
+            (incf success))
+        (progn
+            (format t "    ~c[31mFailed: ~a~c[0m~%" #\ESC test-string #\ESC)
+            (incf fail)))
+    (setq player-hand ())
+    (push (create-card `spades `4) player-hand)
+    (push (create-card `spades `10) player-hand)
+    (setq dealer-hand ())
+    (push (create-card `spades `jack) dealer-hand)
+    (push (create-card `spades `5) dealer-hand)
+    (push (create-card `spades `10) dealer-hand)
+    (setq test-string "Winner is player. (dealer bust)")
+    (if (equal (get-winner player-hand dealer-hand) 'player)
+        (progn
+            (format t "    ~c[32mPassed: ~a~c[0m~%" #\ESC test-string #\ESC) 
+            (incf success))
+        (progn
+            (format t "    ~c[31mFailed: ~a~c[0m~%" #\ESC test-string #\ESC)
+            (incf fail)))
+    (setq player-hand ())
+    (push (create-card `spades `8) player-hand)
+    (push (create-card `spades `10) player-hand)
+    (setq dealer-hand ())
+    (push (create-card `spades `ace) dealer-hand)
+    (push (create-card `spades `5) dealer-hand)
+    (push (create-card `spades `2) dealer-hand)
+    (setq test-string "It's a push.")
+    (if (equal (get-winner player-hand dealer-hand) 'push)
+        (progn
+            (format t "    ~c[32mPassed: ~a~c[0m~%" #\ESC test-string #\ESC) 
+            (incf success))
+        (progn
+            (format t "    ~c[31mFailed: ~a~c[0m~%" #\ESC test-string #\ESC)
+            (incf fail)))
+    (setq test-string "Threw exception on empty player-hand.")
+    (handler-case 
+        (progn 
+            (get-winner nil dealer-hand)
+            (format t "    ~c[31mFailed: Exception test: ~a~c[0m~%" #\ESC test-string #\ESC)
+            (incf fail))
+        (t (error)
+            (format t "    ~c[32mPassed: Exception test: ~a~c[0m~%" #\ESC error #\ESC) 
+            (incf success)))
+    (setq test-string "Threw exception on empty dealer-hand.")
+    (handler-case 
+        (progn 
+            (get-winner player-hand nil)
+            (format t "    ~c[31mFailed: Exception test: ~a~c[0m~%" #\ESC test-string #\ESC)
+            (incf fail))
+        (t (error)
+            (format t "    ~c[32mPassed: Exception test: ~a~c[0m~%" #\ESC error #\ESC) 
+            (incf success)))
 
 
 
@@ -594,7 +686,7 @@
         (return-from run-tests T)))
 
 
-
+(format t "~%")
 (format t " _________  ________   ______   _________   ______  ~%")
 (format t "|  _   _  ||_   __  |.' ____ \\ |  _   _  |.' ____ \\ ~%")
 (format t "|_/ | | \\_|  | |_ \\_|| (___ \\_||_/ | | \\_|| (___ \\_|~%")

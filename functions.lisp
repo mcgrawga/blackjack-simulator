@@ -145,6 +145,9 @@
 
 
 
+
+
+
 (defun deal-player-and-dealer(shoe)
     "Deals the initial hand to player and dealer.
      Returns both hands and the modified deck"
@@ -164,18 +167,22 @@
     (values player-hand dealer-hand shoe))
 
 (defun get-player-bet(player-stack)
-    "Prompts for the bet, decrements the player chip stack and returns both"
+    "Prompts for the bet and return it"
     (if (not player-stack) 
         (error "Can't bet with an empty chip stack."))
     (setq done nil)
     (loop while (not done) do
         (format t "You have $~a.  How much do you want to bet?:  " player-stack)
         (setq bet (read))
-        (if (not (numberp bet)) (format t "That ain't a number. Try again.~%"))
-        (if (> bet player-stack) (format t "Can't bet more than you have. Try again.~%"))
-        (if (< bet 1) (format t "You have to be at least $1. Try again.~%"))
-        (return-from get-player-bet (values bet (- player-stack bet)))
-    ))
+        (if (not (numberp bet)) 
+            (format t "That ain't a number. Try again.~%")
+            (if (> bet player-stack) 
+                (format t "Can't bet more than you have. Try again.~%")
+                (if (< bet 1) 
+                    (format t "You have to be at least $1. Try again.~%")
+                    (setq done T)))))
+    bet)
+    
 
 
 (defun get-player-action()
@@ -189,6 +196,19 @@
         (if (not (member player-action '(h s d))) (setq done nil)) ;invalid entry
         (if (not done) (format t "That ain't valid. Try again.~%")))
     (return-from get-player-action player-action))
+
+
+(defun continue-playing()
+    "Prompts to see if player wants to continue playing or quit."
+    (setq done nil)
+    (loop while (not done) do
+        (setq done T)
+        (format t "Continue[c] or Quit[q]: ")
+        (setq player-action (read))
+        (if (numberp player-action) (setq done nil)) ;invalid entry
+        (if (not (member player-action '(c q))) (setq done nil)) ;invalid entry
+        (if (not done) (format t "That ain't valid. Try again.~%")))
+    player-action)
 
 
 
@@ -238,16 +258,27 @@
         )))
     (values dealer-hand shoe))
 
-;(setq shoe (shuffle-cards (create-deck)))
-;(setq dealer-hand nil)
-;(push (create-card 'spades 'ace) dealer-hand)
-;(push (create-card 'spades '6) dealer-hand)
-;(multiple-value-setq (dealer-hand shoe) (dealer-play dealer-hand shoe))
-;(format t "Dealer ended up with ~a~@[ or ~a~]. (~{~a~^ ~})~%" dealer-hand-val-1 dealer-hand-val-2 (get-hand-vals dealer-hand))
-;(format t "Shoe has: ~a~%" (list-length shoe))
+(defun get-winner(player-hand dealer-hand)
+    "Figures out who wins, player or dealer.  Returns a symbol 'player or 'dealer"
+    (if (not player-hand) 
+        (error "Can't calculate winner with empty player-hand."))
+    (if (not dealer-hand) 
+        (error "Can't calculate winner with empty dealer-hand."))
+    (setq player-hand-val (get-best-hand-value player-hand))
+    (setq dealer-hand-val (get-best-hand-value dealer-hand))
+    (setq winner 'dealer)
+    (if (and (<= player-hand-val 21) (> dealer-hand-val 21)) (setq winner 'player)) ;dealer bust
+    (if (and (<= player-hand-val 21) (> player-hand-val dealer-hand-val)) (setq winner 'player))
+    (if (and (= player-hand-val dealer-hand-val) (<= player-hand-val 21)) (setq winner 'push))
+    winner)
 
-;(setq dealer-hand nil)
-;(push (create-card 'spades 'ace) dealer-hand)
-;(push (create-card 'spades '6) dealer-hand)
-;(multiple-value-setq (dealer-hand-val-1 dealer-hand-val-2) (calculate-hand-value dealer-hand))
-;(format t "~a  ~a~%" dealer-hand-val-1 dealer-hand-val-2)
+(defun print-title()
+    (format t "~%")
+    (format t " ______   _____          _        ______  ___  ____      _____     _        ______  ___  ____~%")
+    (format t "|_   _ \\ |_   _|        / \\     .' ___  ||_  ||_  _|    |_   _|   / \\     .' ___  ||_  ||_  _|~%")
+    (format t "  | |_) |  | |         / _ \\   / .'   \\_|  | |_/ /        | |    / _ \\   / .'   \\_|  | |_/ /~%")
+    (format t "  |  __'.  | |   _    / ___ \\  | |         |  __'.    _   | |   / ___ \\  | |         |  __'.~%")
+    (format t " _| |__)  _| |__/ | _/ /   \\ \\_\\ `.___.'\\ _| |  \\ \\_ | |__' | _/ /   \\ \\_\\ `.___.'\\ _| |  \\ \\_~%")
+    (format t "|_______/|________||____| |____|`.____ .'|____||____|`.____.'|____| |____|`.____ .'|____||____|~%")
+    (format t "~%")
+    (format t "~%"))
