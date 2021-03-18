@@ -220,6 +220,7 @@
         (error "Can't play dealer-hand has less than 2 cards."))
     (if (not shoe)
         (error "Can't play with an empty shoe."))
+    (setq double nil)
     (setq player-action nil)
     (loop while (not (string-equal player-action "s"))
         do 
@@ -233,9 +234,11 @@
                         (if (not (string-equal player-action "s")) 
                             (progn
                                 (multiple-value-setq (card shoe) (deal-card shoe))
-                                (push card player-hand)))))
+                                (push card player-hand)
+                                (if (string-equal player-action "d") (setq double T))
+                                (if (string-equal player-action "d") (setq player-action "s"))))))
             )
-    (values player-hand shoe))
+    (values player-hand shoe double))
 
 (defun dealer-play (dealer-hand shoe)
     "Plays out the dealer hand, hits on soft 17"
@@ -274,11 +277,11 @@
 
 (defun print-title()
     (format t "~%")
-    (format t " ______   _____          _        ______  ___  ____      _____     _        ______  ___  ____~%")
-    (format t "|_   _ \\ |_   _|        / \\     .' ___  ||_  ||_  _|    |_   _|   / \\     .' ___  ||_  ||_  _|~%")
-    (format t "  | |_) |  | |         / _ \\   / .'   \\_|  | |_/ /        | |    / _ \\   / .'   \\_|  | |_/ /~%")
-    (format t "  |  __'.  | |   _    / ___ \\  | |         |  __'.    _   | |   / ___ \\  | |         |  __'.~%")
-    (format t " _| |__)  _| |__/ | _/ /   \\ \\_\\ `.___.'\\ _| |  \\ \\_ | |__' | _/ /   \\ \\_\\ `.___.'\\ _| |  \\ \\_~%")
-    (format t "|_______/|________||____| |____|`.____ .'|____||____|`.____.'|____| |____|`.____ .'|____||____|~%")
+    (format t "~c[32m ______   _____          _        ______  ___  ____      _____     _        ______  ___  ____~c[0m~%" #\ESC #\ESC)
+    (format t "~c[32m|_   _ \\ |_   _|        / \\     .' ___  ||_  ||_  _|    |_   _|   / \\     .' ___  ||_  ||_  _|~c[0m~%" #\ESC #\ESC)
+    (format t "~c[32m  | |_) |  | |         / _ \\   / .'   \\_|  | |_/ /        | |    / _ \\   / .'   \\_|  | |_/ /~c[0m~%" #\ESC #\ESC)
+    (format t "~c[32m  |  __'.  | |   _    / ___ \\  | |         |  __'.    _   | |   / ___ \\  | |         |  __'.~c[0m~%" #\ESC #\ESC)
+    (format t "~c[32m _| |__)  _| |__/ | _/ /   \\ \\_\\ `.___.'\\ _| |  \\ \\_ | |__' | _/ /   \\ \\_\\ `.___.'\\ _| |  \\ \\_~c[0m~%" #\ESC #\ESC)
+    (format t "~c[32m|_______/|________||____| |____|`.____ .'|____||____|`.____.'|____| |____|`.____ .'|____||____|~c[0m~%" #\ESC #\ESC)
     (format t "~%")
     (format t "~%"))
